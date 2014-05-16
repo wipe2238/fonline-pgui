@@ -1,0 +1,128 @@
+//
+// PGUI
+// Primitive GUI for FOnline based games
+// Wipe/Rotators
+//
+
+#ifndef __PGUI_SPRITE__
+#define __PGUI_SPRITE__
+
+#include "pgui.fos"
+
+shared class PGUISprite : PGUIElement
+{
+    uint id;
+    uint frameCount;
+    string filename;
+    uint color;
+    bool center;
+
+    PGUISprite()
+    {
+        super();
+        this.PGUISpriteInit();
+
+        this.Unload();
+    }
+
+    PGUISprite( uint width, uint height )
+    {
+        super();
+        this.PGUISpriteInit();
+
+        this.Width = width;
+        this.Height = height;
+
+        this.Unload( true );
+    }
+
+    PGUISprite( string& filename, int path )
+    {
+        super();
+        this.PGUISpriteInit();
+
+        this.LoadFile( filename, path );
+    }
+/*
+    PGUISprite( uint nameHash, uint8 dir )
+    {
+        super();
+        this.PGUISpriteInit();
+
+        this.LoadHash( nameHash, dir );
+    }
+*/
+    private void PGUISpriteInit() final
+    {
+        this.active = this.center = false;
+        this.id = this.frameCount = this.color = 0;
+    }
+
+    bool LoadFile( string& filename, int path, bool keepSize = false )
+    {
+        if( filename.length() > 0 )
+        {
+            this.id = LoadSprite( filename, path );
+            this.filename = filename;
+        }
+        else
+            this.id = 0;
+
+        this.RefreshData( keepSize );
+
+        return( this.id > 0 );
+    }
+/*
+    bool LoadHash( uint nameHash, uint8 dir, bool keepSize = false )
+    {
+        this.id = LoadSprite( nameHash, dir );
+
+        this.RefreshData( keepSize );
+        return( this.id > 0 );
+    }
+*/
+    void RefreshData( bool keepSize = false ) final
+    {
+        if( this.id > 0 )
+        {
+            if( !keepSize )
+            {
+                this.Width = GetSpriteWidth( this.id, 0 );
+                this.Height = GetSpriteHeight( this.id, 0 );
+            }
+
+            this.frameCount = GetSpriteCount( this.id );
+        }
+        else
+        {
+            if( !keepSize )
+            {
+                this.Width = 0;
+                this.Height = 0;
+            }
+
+            this.frameCount = 0;
+            this.filename = "";
+        }
+    }
+
+    void Unload( bool keepSize = false )
+    {
+        this.id = 0;
+        this.RefreshData( keepSize );
+    }
+
+    //
+    // PGUIElement overrides
+    //
+
+    void Draw() override
+    {
+        if( this.visible && this.id > 0 )
+            DrawSprite( this.id, -1, this.Left, this.Top, this.Width, this.Height, false, this.center, this.color );
+
+        PGUIElement::Draw();
+    }
+};
+
+#endif // __PGUI_SPRITE__ //

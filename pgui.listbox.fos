@@ -1,0 +1,77 @@
+//
+// PGUI
+// Primitive GUI for FOnline based games
+// Wipe/Rotators
+//
+
+#ifndef __PGUI_LISTBOX__
+#define __PGUI_LISTBOX__
+
+#include "pgui.fos"
+
+shared class PGUIListBox : PGUIElement
+{
+    array<string@> listElements;
+
+    uint start;
+    uint selected;
+
+    private uint textHeight;
+
+    PGUIListBox()
+    {
+        super();
+        this.PGUIListBoxInit();
+    }
+
+    PGUIListBox( uint width, uint height )
+    {
+        super( width, height );
+        this.PGUIListBoxInit();
+    }
+
+    private void PGUIListBoxInit() final
+    {
+        this.listElements.resize(0);
+        this.start = 0;
+        this.selected = uint(-1);
+        this.textHeight = 12;
+    }
+
+    void Add( string@ element )
+    {
+        this.listElements.insertLast( element );
+    }
+
+    void Set( array<string@>& newElements )
+    {
+        for( uint e=0, eLen=newElements.length(); e<eLen; e++ )
+        {
+            this.Add( newElements[e] );
+        }
+    }
+
+    void Scroll( int offset )
+    {
+        this.start = PGUI_CLAMP( this.start+offset, 0, int(this.listElements.length()-1) );
+    }
+
+    //
+    // PGUIElement overrides
+    //
+
+    void Click() override
+    {
+        uint clicked = this.start + (this.mouseY-this.Top) / this.textHeight;
+        if( clicked < this.listElements.length() )
+            this.selected = clicked;
+
+        PGUIElement::Click();
+    }
+
+    void Draw() override
+    {
+    }
+};
+
+#endif // __PGUI_LISTBOX__ //

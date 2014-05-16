@@ -1,0 +1,103 @@
+//
+// PGUI
+// Primitive GUI for FOnline based games
+// Wipe/Rotators
+//
+
+#ifndef __PGUI_MSGBOX__
+#define __PGUI_MSGBOX__
+
+#include "pgui.fos"
+
+shared class PGUIMessageBox : PGUIElement
+{
+    uint                   lineHeight;
+    int                    font;
+    int                    flags;
+
+    private array<int>     types;
+    private array<string@> messages;
+    private uint           start;
+
+    PGUIMessageBox()
+    {
+        super();
+        this.PGUIMessageBoxInit();
+    }
+
+    PGUIMessageBox( uint width, uint height )
+    {
+	super( width, height );
+	this.PGUIMessageBoxInit();
+    }
+
+    private void PGUIMessageBoxInit() final
+    {
+	this.types.resize(0);
+        this.messages.resize(0);
+
+	this.lineHeight = 10;
+	this.font = PGUI_FONT_FALLOUT;
+	this.flags = 0;
+    }
+
+    bool Add( int type, string@ message )
+    {
+	if( !valid(message) || findFirstOf( message, "\r" ) >= 0 || findFirstOf( message, "\n" ) >= 0 )
+	    return( false );
+
+	this.types.insertLast( type );
+	this.messages.insertLast( message );
+
+	return( true );
+    }
+
+    void Add( array<int> types, array<string@> messages )
+    {
+	if( types.length() != messages.length() )
+	    return;
+
+	for( uint m=0, mLen=messages.length(); m<mLen; m++ )
+	{
+	    this.Add( types[m], messages[m] );
+	}
+    }
+
+    //
+    // PGUIElement overrides
+    //
+
+    void Draw()
+    {
+	PGUIElement::DrawBackground( PGUI_RGBA(100,100,100,100) );
+
+
+	uint mLen=this.messages.length();
+	uint tLen=this.types.length();
+
+	if( tLen == 0 || tLen != mLen )
+	{
+	    PGUIElement::Draw();
+	    return;
+	}
+
+	uint freeHeight = this.Height;
+	for( uint m=mLen-1; m>=0; m-- )
+	{
+	    if( (mLen-m)*this.lineLength > this.Height )
+		break;
+
+	    string@ message = this.messages[m];
+	    if( !valid(message) )
+		@message = "";
+
+	    uint tw = 0, th = 0, lines = 0;
+	    GetTextInfo( message, this.Width, this.lineHeight, this.font, this.flags, tw, th, lines );
+	    DrawText( message, this.Left, this.Top, this.Width, this.lineHeight, 0, this.font, this.flags );
+	}
+
+	PGUIElement::Draw();
+    }
+};
+
+#endif // __PGUI_MSGBOX__ //

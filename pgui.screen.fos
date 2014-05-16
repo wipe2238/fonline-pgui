@@ -1,0 +1,130 @@
+//
+// PGUI
+// Primitive GUI for FOnline based games
+// Wipe/Rotators
+//
+
+#ifndef __PGUI_SCREEN__
+#define __PGUI_SCREEN__
+
+#include "pgui.fos"
+
+shared class PGUIScreen : PGUIElement
+{
+    uint ID;
+    array<uint8> Layers;
+    uint8 CurrentLayer;
+
+    bool canMove;
+    bool ignoreBorders;
+
+    bool drawFrame, drawBackground;
+    int colorFrame, colorBackground;
+
+
+    PGUIScreen( uint8 layer )
+    {
+        super();
+        array<uint8> layers = { layer };
+        this.PGUIScreenInit( 0, 0, layers );
+    }
+
+    PGUIScreen( array<uint8>& layers )
+    {
+        super();
+        this.PGUIScreenInit( 0, 0, layers );
+    }
+
+    PGUIScreen( uint width, uint height, uint8 layer )
+    {
+        super();
+        array<uint8> layers = { layer };
+        this.PGUIScreenInit( width, height, layers );
+    }
+
+    PGUIScreen( uint width, uint height, array<uint8>& layers )
+    {
+        super();
+        this.PGUIScreenInit( width, height, layers );
+    }
+
+    private void PGUIScreenInit( uint width, uint height, array<uint8>& layers ) final
+    {
+        this.ID = 0;
+        this.Layers.resize(0);
+        this.CurrentLayer = 0;
+
+        for( uint l=0, len=layers.length(); l<len; l++ )
+        {
+            uint8 layer = layers[l];
+            if( this.Layers.find( layer ) < 0 )
+                this.Layers.insertLast( layer );
+        }
+        this.Layers.sortAsc();
+
+        this.ignoreBorders = false;
+        this.Width = width;
+        this.Height = height;
+        this.canMove = this.drawFrame = this.drawBackground = true;
+        this.colorFrame = PGUI_RGBi(0,255,0);
+        this.colorBackground = PGUI_RGBAi(0,255,0,100);
+    }
+
+    //
+    // PGUIElement overrides
+    //
+
+    void MouseMove( int fromX, int fromY, int toX, int toY ) override
+    {
+        if( this.mousePressed && this.mouseClick == PGUI_CLICK_LEFT )
+        {
+            int lastX = this.mouseX;
+            int lastY = this.mouseY;
+            int offX = toX - fromX;
+            int offY = toY - fromY;
+
+            this.Left = this.Left + offX;
+            this.Top  = this.Top  + offY;
+
+            if( !this.ignoreBorders )
+            {
+                if( this.Left + offX < 0 )
+                    this.Left = 0;
+                if( this.Top + offY < 0 )
+                    this.Top = 0;
+                if( this.Right > __ScreenWidth )
+                    this.Left = __ScreenWidth - this.Width;
+                if( this.Bottom > __ScreenHeight )
+                    this.Top = __ScreenHeight - this.Height;
+            }
+
+            PGUIElement::MouseMove( fromX, fromY, toX, toY );
+        }
+    }
+
+    void Update() override
+    {
+        PGUIElement::Update();
+    }
+
+    void Draw() override
+    {
+        if( this.drawBackground )
+            this.DrawBackground( this.colorBackground );
+        if( this.drawFrame )
+            this.DrawFrame( this.colorFrame );
+
+        PGUIElement::Draw();
+    }
+
+    void OnShow()
+    {
+    }
+    
+    void OnHide()
+    {
+    }
+};
+
+#endif // __PGUI_SCREEN__ //
+
