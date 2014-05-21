@@ -341,6 +341,42 @@ shared class PGUI
         return( result );
     }
 
+    int GetInterfaceInt( string& name, int defaultValue )
+    {
+	int result = defaultValue;
+	string@ iface = GetIfaceIniStr( name );
+
+	if( valid(iface) && iface.length() > 0 )
+	    StrToInt( iface, result );
+
+	return( result );
+    }
+
+    array<int> GetInterfaceArray( string& name, array<int>& defaultValues )
+    {
+	uint dLen = defaultValues.length;
+	if( dLen == 0 )
+	    return( defaultValues );
+
+	array<int> result = defaultValues;
+
+	string@ iface = GetIfaceIniStr( name );
+	if( valid(iface) && iface.length() > 0 )
+	{
+	    array<string@> str = splitEx( iface, " " );
+	    if( str.length() >= dLen )
+	    {
+		for( uint v=0; v<dLen; v++ )
+		{
+		    if( !StrToInt( str[v], result[v] ))
+			return( defaultValues );
+		}
+	    }
+	}
+
+	return( result );
+    }
+
 }; // PGUI
 
 #endif // __PGUI__ //
