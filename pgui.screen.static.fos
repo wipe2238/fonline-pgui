@@ -16,7 +16,7 @@
 // Allows to create screen which won't catch mouse events on its own, but pass them to child elements only
 //
 
-shared class PGUIStaticScreen : PGUIScreen
+class PGUIStaticScreen : PGUIScreen
 {
     PGUIStaticScreen( uint8 layer )
     {

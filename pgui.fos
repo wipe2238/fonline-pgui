@@ -87,7 +87,7 @@
 #include "pgui.sprite.fos"
 #include "pgui.textbox.fos"
 
-shared class PGUI
+class PGUI
 {
     bool active;
     bool elementsFirst;
@@ -182,7 +182,7 @@ shared class PGUI
         for( int s=screensLen-1; s>=0; s-- )
         {
             if( this.activeScreens[s].MouseUp( click, x, y ))
-        	return( true );
+                return( true );
         }
 
         return( false );
@@ -277,24 +277,24 @@ shared class PGUI
 
     PGUIScreen@ GetActiveScreen( uint id )
     {
-	for( uint s=0, sLen=this.activeScreens.length(); s<sLen; s++ )
-	{
-	    PGUIScreen@ screen = this.activeScreens[s];
-	    if( screen.ID == id )
-		return( screen );
-	}
+        for( uint s=0, sLen=this.activeScreens.length(); s<sLen; s++ )
+        {
+            PGUIScreen@ screen = this.activeScreens[s];
+            if( screen.ID == id )
+                return( screen );
+        }
 
-	return( null );
+        return( null );
     }
 
     void GetActiveScreens( array<int>& result ) // for engine
     {
-	result.resize(0);
+        result.resize(0);
 
-	for( uint s=0, sLen=this.activeScreens.length(); s<sLen; s++ )
-	{
-	    result.insertLast(this.activeScreens[s].ID);
-	}
+        for( uint s=0, sLen=this.activeScreens.length(); s<sLen; s++ )
+        {
+            result.insertLast(this.activeScreens[s].ID);
+        }
     }
 
     bool ShowScreen( uint id )
@@ -326,14 +326,14 @@ shared class PGUI
         {
             for( int s=0, sLen=this.activeScreens.length(); s<sLen; s++ )
             {
-    		PGUIScreen@ screen = this.activeScreens[s];
+                    PGUIScreen@ screen = this.activeScreens[s];
                 if( screen.ID == id )
                 {
                     this.activeScreens.removeAt( s );
                     s--;
                     sLen--;
                     result = true;
-            	    screen.OnHide();
+                        screen.OnHide();
                 }
             }
         }
@@ -343,38 +343,38 @@ shared class PGUI
 
     int GetInterfaceInt( string& name, int defaultValue )
     {
-	int result = defaultValue;
-	string@ iface = GetIfaceIniStr( name );
+        int result = defaultValue;
+        string@ iface = GetIfaceIniStr( name );
 
-	if( valid(iface) && iface.length() > 0 )
-	    StrToInt( iface, result );
+        if( valid(iface) && iface.length() > 0 )
+            StrToInt( iface, result );
 
-	return( result );
+        return( result );
     }
 
     array<int> GetInterfaceArray( string& name, array<int>& defaultValues )
     {
-	uint dLen = defaultValues.length;
-	if( dLen == 0 )
-	    return( defaultValues );
+        uint dLen = defaultValues.length;
+        if( dLen == 0 )
+            return( defaultValues );
 
-	array<int> result = defaultValues;
+        array<int> result = defaultValues;
 
-	string@ iface = GetIfaceIniStr( name );
-	if( valid(iface) && iface.length() > 0 )
-	{
-	    array<string@> str = splitEx( iface, " " );
-	    if( str.length() >= dLen )
-	    {
-		for( uint v=0; v<dLen; v++ )
-		{
-		    if( !StrToInt( str[v], result[v] ))
-			return( defaultValues );
-		}
-	    }
-	}
+        string@ iface = GetIfaceIniStr( name );
+        if( valid(iface) && iface.length() > 0 )
+        {
+            array<string@> str = splitEx( iface, " " );
+            if( str.length() >= dLen )
+            {
+                for( uint v=0; v<dLen; v++ )
+                {
+                    if( !StrToInt( str[v], result[v] ))
+                        return( defaultValues );
+                }
+            }
+        }
 
-	return( result );
+        return( result );
     }
 
 }; // PGUI

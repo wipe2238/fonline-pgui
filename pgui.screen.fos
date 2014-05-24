@@ -9,7 +9,7 @@
 
 #include "pgui.fos"
 
-shared class PGUIScreen : PGUIElement
+class PGUIScreen : PGUIElement
 {
     uint ID;
     array<uint8> Layers;

@@ -14,7 +14,7 @@
 //
 // Base of all other objects
 //
-shared class PGUIElement
+class PGUIElement
 {
     PGUIElement@ parent;
     array<PGUIElement@> elements;
